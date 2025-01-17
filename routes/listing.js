@@ -42,7 +42,9 @@ router.get(
   "/:id",
   wrapAsync(async (req, res) => {
     let { id } = req.params;
-    const listing = await Listing.findById(id).populate("reviews");
+    const listing = await Listing.findById(id)
+      .populate("reviews")
+      .populate("owner");
     if (!listing) {
       req.flash("error", "listing you requested for does not exist");
       res.redirect("/listings");
@@ -59,6 +61,9 @@ router.post(
   isLoggedIn,
   wrapAsync(async (req, res, next) => {
     const newListings = new Listing(req.body.listing);
+    //add below line  when u get error
+    //Cannot read properties of undefined (reading 'username')
+    newListings.owner = req.user._id;
     await newListings.save();
     req.flash("success", "New Listing created");
     res.redirect("/listings");

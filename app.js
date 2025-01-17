@@ -32,7 +32,7 @@ main()
     console.log("connected to db");
   })
   .catch((err) => {
-    console.log(err);
+    console.log("db connection error", err);
   });
 async function main() {
   await mongoose.connect(MONGO);
