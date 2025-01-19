@@ -1,3 +1,7 @@
+if (process.env.NODE_ENV != "production") {
+  require("dotenv").config();
+}
+
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -23,9 +27,6 @@ app.use(express.json());
 app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
 app.use(express.static(path.join(__dirname, "/public")));
-const MONGO =
-  "mongodb+srv://nadimkhan:877hKGb1uL45LKhm@cluster0.nvurw.mongodb.net/wanderlust?";
-//const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
 
 main()
   .then((res) => {
@@ -35,7 +36,7 @@ main()
     console.log("db connection error", err);
   });
 async function main() {
-  await mongoose.connect(MONGO);
+  await mongoose.connect(process.env.MONGO_URI);
 }
 
 const sessionOptions = {
@@ -77,14 +78,14 @@ app.use("/listings", listingRouter);
 app.use("/listings/:id/reviews", reviewRouter);
 app.use("/", userRouter);
 
-app.all("*", (req, res, next) => {
-  next(new ExpressError(404, "Page not found!"));
-});
+// app.all("*", (req, res, next) => {
+//   next(new ExpressError(404, "Page not found!"));
+// });
 
-app.use((err, req, res, next) => {
-  let { statusCode = 500, message = "Something went wrong" } = err;
-  res.status(statusCode).render("error.ejs", { err, message });
-});
+// app.use((err, req, res, next) => {
+//   let { statusCode = 500, message = "Something went wrong" } = err;
+//   res.status(statusCode).render("error.ejs", { err, message });
+// });
 
 app.listen(8080, () => {
   console.log("Listening to port 8080");
